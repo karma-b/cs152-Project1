@@ -1,5 +1,6 @@
 package edu.sjsu.fwjs;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -117,7 +118,7 @@ class IfExpr implements Expression {
     public Value evaluate(Environment env) {
         // YOUR CODE HERE
         Value v = cond.evaluate(env);
-        if (((BoolVal)cond).toBoolean()) {
+        if (((BoolVal)v).toBoolean()) {
             return thn.evaluate(env);
         }
         else {
@@ -141,6 +142,7 @@ class WhileExpr implements Expression {
         Value v = cond.evaluate(env);
         while(((BoolVal)v).toBoolean()) {
             body.evaluate(env);
+            v = cond.evaluate(env);
         }
         return new NullVal();
     }
@@ -214,7 +216,7 @@ class FunctionDeclExpr implements Expression {
     }
     public Value evaluate(Environment env) {
         // YOUR CODE HERE
-        return null;
+        return new ClosureVal(params, body, env);
     }
 }
 
@@ -230,6 +232,11 @@ class FunctionAppExpr implements Expression {
     }
     public Value evaluate(Environment env) {
         // YOUR CODE HERE
-        return null;
+        List<Value> vals = new ArrayList<>();
+        for(Expression e : args) {
+            vals.add(e.evaluate(env));
+        } 
+        Value v = f.evaluate(env);
+        return ((ClosureVal)v).apply(vals); 
     }
 }
