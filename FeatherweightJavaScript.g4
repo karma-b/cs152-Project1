@@ -51,9 +51,15 @@ stat: expr SEPARATOR                                    # bareExpr
     | SEPARATOR                                         # emptyStatement
     ;
 
-expr: expr op=( '*' | '/' | '%' ) expr                  # MulDivMod
+expr: expr op=(GT | LT | GE | LE | EQ) expr             # equalityComp
+    | expr op=(ADD | SUB) expr                          #AddSub
+    | expr op=( '*' | '/' | '%' ) expr                  # MulDivMod
     | INT                                               # int
+    | BOOL                                              # boolean
+    | NULL                                              # null
     | '(' expr ')'                                      # parens
+    
+
     ;
 
 block: '{' stat* '}'                                    # fullBlock
