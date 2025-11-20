@@ -54,7 +54,6 @@ stat: expr SEPARATOR                                    # bareExpr
     | SEPARATOR                                         # emptyStatement
     ;
 
-<<<<<<< HEAD
 expr: expr op=(GE | LE | EQ | GT | LT) expr             # equality
     | expr op=(ADD | SUB)                               # addSub
     | expr op=(MUL | DIV | MOD)                         # multDivMod
@@ -71,13 +70,6 @@ expr: expr op=(GE | LE | EQ | GT | LT) expr             # equality
     | expr VAR IDS '=' INT                              # assignInt
     | INT                                               # in
     | BOOL                                              # bool
-=======
-expr: expr op=(GT | LT | GE | LE | EQ) expr             # equalityComp
-    | expr op=(ADD | SUB) expr                          #AddSub
-    | expr op=( '*' | '/' | '%' ) expr                  # MulDivMod
-    | INT                                               # int
-    | BOOL                                              # boolean
->>>>>>> 2cb7899d150805dd3b1c829a40edd4f0f33d97f2
     | NULL                                              # null
     | '(' expr ')'                                      # parens
     
