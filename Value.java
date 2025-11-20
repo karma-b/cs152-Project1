@@ -100,6 +100,8 @@ class ClosureVal implements Value {
 
             local.updateVar(param, v);
         }
+
+        
         return body.evaluate(local);
     }
 }
