@@ -17,7 +17,7 @@ BOOL      : 'true' | 'false' ;
 NULL      : 'null' ;
 
 //identifiers
-IDS       : [a-zA-Z_] [a-zA-Z_0-9]*;
+IDS       : [a-zA-Z_][a-zA-Z_0-9]*;
 
 // Symbols
 MUL       : '*' ;
@@ -53,13 +53,13 @@ stat: expr SEPARATOR                                    # bareExpr
     | SEPARATOR                                         # emptyStatement
     ;
 
-expr: expr op=(GE | LE | EQ | GT | LT) expr             # equality
-    | expr op=(ADD | SUB) expr                          # addSub
+expr: expr '(' (expr (',' expr )* )? ')'                # funcCall
     | expr op=(MUL | DIV | MOD) expr                    # multDivMod
+    | expr op=(ADD | SUB) expr                          # addSub
+    | expr op=(GE | LE | EQ | GT | LT) expr             # equality
     | FUNCTION '(' (IDS (',' IDS)* )? ')' block         # funcDeclare
-    | expr '(' (expr (',' expr )* )? ')'                # funcCall
-    | IDS '=' stat                                      # assignVarIDS
-    | VAR IDS '=' stat                                  # varAssign
+    | IDS '=' expr                                      # assignVarIDS
+    | VAR IDS '=' expr                                  # varAssign
     | IDS                                               # varRef
     | INT                                               # in
     | BOOL                                              # bool
@@ -70,5 +70,3 @@ expr: expr op=(GE | LE | EQ | GT | LT) expr             # equality
 block: '{' stat* '}'                                    # fullBlock
      | stat                                             # simpBlock
      ;
-
-
