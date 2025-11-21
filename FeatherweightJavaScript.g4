@@ -47,33 +47,24 @@ BLOCK_COMMENT : '/*' .*? '*/' -> skip ;
 prog: stat+ ;
 
 stat: expr SEPARATOR                                    # bareExpr
-    | IF '(' expr ')' block ELSE block                  # ifThenElse
-    | IF '(' expr ')' block                             # ifThen
+    | IF '(' expr ')' block (ELSE block)?               # ifThenElse
     | WHILE '(' expr ')' block                          # whileLoop
     | PRINT '(' expr ')' SEPARATOR                      # printStatement
     | SEPARATOR                                         # emptyStatement
     ;
 
 expr: expr op=(GE | LE | EQ | GT | LT) expr             # equality
-    | expr op=(ADD | SUB)                               # addSub
-    | expr op=(MUL | DIV | MOD)                         # multDivMod
-    | expr FUNCTION'(' (',' IDS)* ')' block             # funcDeclare
-    | expr FUNCTION'(' (',' FUNCTION)* ')'              # funcCall
-    | expr IDS '=' IDS                                  # assignVarIDS
-    | expr IDS '=' BOOL                                 # assignVarBool
-    | expr IDS '=' NULL                                 # assignVarNull
-    | expr IDS '=' INT                                  # assignVarInt
-    | expr VAR IDS                                      # varRef
-    | expr VAR IDS '=' IDS                              # assignIDS
-    | expr VAR IDS '=' BOOL                             # assignBool
-    | expr VAR IDS '=' NULL                             # assignNull
-    | expr VAR IDS '=' INT                              # assignInt
+    | expr op=(ADD | SUB) expr                          # addSub
+    | expr op=(MUL | DIV | MOD) expr                    # multDivMod
+    | FUNCTION '(' (IDS (',' IDS)* )? ')' block         # funcDeclare
+    | expr '(' (expr (',' expr )* )? ')'                # funcCall
+    | IDS '=' stat                                      # assignVarIDS
+    | VAR IDS '=' stat                                  # varAssign
+    | IDS                                               # varRef
     | INT                                               # in
     | BOOL                                              # bool
     | NULL                                              # null
     | '(' expr ')'                                      # parens
-    
-
     ;
 
 block: '{' stat* '}'                                    # fullBlock
