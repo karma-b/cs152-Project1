@@ -26,7 +26,13 @@ public class ExpressionBuilderVisitor extends FeatherweightJavaScriptBaseVisitor
     public Expression visitIfThenElse(FeatherweightJavaScriptParser.IfThenElseContext ctx) {
         Expression cond = visit(ctx.expr());
         Expression thn = visit(ctx.block(0));
-        Expression els = visit(ctx.block(1));
+        Expression els;
+        if (ctx.block().size() > 1) {
+            els = visit(ctx.block(1));
+        }
+        else {
+            els = new ValueExpr(new NullVal());
+        }
         return new IfExpr(cond, thn, els);
     }
 
@@ -53,7 +59,7 @@ public class ExpressionBuilderVisitor extends FeatherweightJavaScriptBaseVisitor
         List<Expression> stmts = new ArrayList<Expression>();
         for (int i=1; i<ctx.getChildCount()-1; i++) {
             Expression exp = visit(ctx.getChild(i));
-            stmts.add(exp);
+                stmts.add(exp);
         }
         return listToSeqExp(stmts);
     }
@@ -131,11 +137,11 @@ public class ExpressionBuilderVisitor extends FeatherweightJavaScriptBaseVisitor
 
     @Override
     public Expression visitFuncCall(FeatherweightJavaScriptParser.FuncCallContext ctx) {
-        Expression f = ctx.expr();
+        Expression f = visit(ctx.expr(0));
         List<Expression> args = new ArrayList<Expression>();
         
-        for (int i=1; i<ctx.getChildCount()-1; i++) {
-            Expression exp = visit(ctx.getChild(i));
+        for (int i=1; i<ctx.expr().size(); i++) {
+            Expression exp = visit(ctx.expr(i));
             args.add(exp);
         }
 
