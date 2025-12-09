@@ -30,12 +30,12 @@ public class ExpressionBuilderVisitor extends FeatherweightJavaScriptBaseVisitor
         return new IfExpr(cond, thn, els);
     }
 
-    @Override
+    /*@Override
     public Expression visitIfThen(FeatherweightJavaScriptParser.IfThenContext ctx) {
         Expression cond = visit(ctx.expr());
         Expression thn = visit(ctx.block());
         return new IfExpr(cond, thn, null);
-    }
+    }*/
 
     @Override
     public Expression visitInt(FeatherweightJavaScriptParser.IntContext ctx) {
@@ -120,7 +120,13 @@ public class ExpressionBuilderVisitor extends FeatherweightJavaScriptBaseVisitor
 
     @Override
     public Expression visitFuncDeclare(FeatherweightJavaScriptParser.FuncDeclareContext ctx) {
-        
+        ArrayList<String> params = new ArrayList<>();
+        if (ctx.IDS() != null) {
+            for(int i = 0; i < ctx.IDS().size(); i++) {
+                params.add(ctx.IDS(i).getText());
+            }
+        }
+        return new FunctionDeclExpr(params, visit(ctx.block()));
     }
 
     @Override
@@ -133,7 +139,7 @@ public class ExpressionBuilderVisitor extends FeatherweightJavaScriptBaseVisitor
             args.add(exp);
         }
 
-        return new FunctionAppExpr(args, f);
+        return new FunctionAppExpr(f, args);
     }
 
     @Override
@@ -159,7 +165,20 @@ public class ExpressionBuilderVisitor extends FeatherweightJavaScriptBaseVisitor
 
     @Override
     public Expression visitAddSub(FeatherweightJavaScriptParser.AddSubContext ctx) {
+        Expression left = visit(ctx.expr(0));
+        Expression right = visit(ctx.expr(1));
+        Op op;
 
+        if (ctx.op.getType() == FeatherweightJavaScriptParser.ADD) {
+            op = Op.ADD;
+        }
+        else if (ctx.op.getType() == FeatherweightJavaScriptParser.SUB) {
+            op = Op.SUBTRACT;
+        }
+        else {
+            throw new RuntimeException("Invalid Operator!");
+        }
+        return new BinOpExpr(op, left, right);
     }
 
     @Override
