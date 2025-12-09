@@ -120,12 +120,20 @@ public class ExpressionBuilderVisitor extends FeatherweightJavaScriptBaseVisitor
 
     @Override
     public Expression visitFuncDeclare(FeatherweightJavaScriptParser.FuncDeclareContext ctx) {
-
+        
     }
 
     @Override
     public Expression visitFuncCall(FeatherweightJavaScriptParser.FuncCallContext ctx) {
+        Expression f = ctx.expr();
+        List<Expression> args = new ArrayList<Expression>();
+        
+        for (int i=1; i<ctx.getChildCount()-1; i++) {
+            Expression exp = visit(ctx.getChild(i));
+            args.add(exp);
+        }
 
+        return new FunctionAppExpr(args, f);
     }
 
     @Override
@@ -156,6 +164,26 @@ public class ExpressionBuilderVisitor extends FeatherweightJavaScriptBaseVisitor
 
     @Override
     public Expression visitEquality(FeatherweightJavaScriptParser.EqualityContext ctx) {
+        Expression left = visit(ctx.expr(0));
+        Expression right = visit(ctx.expr(1));
+        Op op;
 
+        if (ctx.op.getType() == FeatherweightJavaScriptParser.GE) {
+            op = Op.GE;
+        }
+        else if (ctx.op.getType() == FeatherweightJavaScriptParser.LE) {
+            op = Op.LE;
+        }
+        else if (ctx.op.getType() == FeatherweightJavaScriptParser.EQ) {
+            op = Op.EQ;
+        } else if(ctx.op.getType() == FeatherweightJavaScriptParser.GT) {
+            op = Op.GT;
+        } else if(ctx.op.getType() == FeatherweightJavaScriptParser.LT) {
+            op = Op.LT;
+        }
+        else {
+            throw new RuntimeException("Invalid Operator!");
+        }
+        return new BinOpExpr(op, left, right);
     }
 }
